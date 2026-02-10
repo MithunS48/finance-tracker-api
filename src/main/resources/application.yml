@@ -7,6 +7,15 @@ spring:
     username: root
     password: Mithun@48
 
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: Ov23liuj0kQ3Uhhid4Dh
+            client-secret: 48b75095c91a7f41f9b863a337b4156b40a223b3
+            scope: user:email
+
 
   jpa:
     hibernate:
@@ -15,4 +24,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+
+
+
+
 

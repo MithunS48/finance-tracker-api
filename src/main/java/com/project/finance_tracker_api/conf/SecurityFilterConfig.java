@@ -4,6 +4,7 @@ import com.project.finance_tracker_api.security.JwtFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.web.SecurityFilterChain;
 
 
@@ -18,10 +19,18 @@ public class SecurityFilterConfig {
     private JwtFilter jwtFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)
+            throws Exception {
 
        http.csrf(csrf->csrf.disable())
-        .authorizeHttpRequests(auth->auth.requestMatchers("/api/users/login", "/api/users/create").permitAll().anyRequest().authenticated())
+        .authorizeHttpRequests(auth->auth.
+                requestMatchers("/api/users/login", "/api/users/create",        "/oauth2/**",
+                        "/login/**"
+                )
+                .permitAll()
+                .anyRequest()
+                .authenticated())
+               .oauth2Login(Customizer.withDefaults())
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
        return http.build();
