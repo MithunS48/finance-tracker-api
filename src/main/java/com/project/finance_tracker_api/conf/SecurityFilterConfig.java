@@ -23,6 +23,8 @@ public class SecurityFilterConfig {
             throws Exception {
 
        http.csrf(csrf->csrf.disable())
+               .formLogin(form -> form.disable())
+               .httpBasic(basic -> basic.disable())
         .authorizeHttpRequests(auth->auth.
                 requestMatchers("/api/users/login", "/api/users/create",        "/oauth2/**",
                         "/login/**"
@@ -30,7 +32,7 @@ public class SecurityFilterConfig {
                 .permitAll()
                 .anyRequest()
                 .authenticated())
-               .oauth2Login(Customizer.withDefaults())
+
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
        return http.build();

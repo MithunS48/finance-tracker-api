@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.project.finance_tracker_api.service.UserService;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
@@ -28,5 +30,10 @@ public class UserCont {
     public String login(@RequestBody LoginDto loginDto){
 
         return  userService.loginVerify(loginDto);
+    }
+
+    @GetMapping("/all")
+    public List<ResponseDto> getAllUser(){
+        return userService.getAllUsers();
     }
 }

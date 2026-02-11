@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +21,7 @@ public class UserService {
 
 
 
-    private final UserRepo userrepo;
+    private final UserRepo userRepo;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtUnit jwtUnit;
@@ -35,7 +38,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
         user.setRole("USER");
 
-        User saveUser=userrepo.save(user);
+        User saveUser=userRepo.save(user);
 
 
         //entity to response dto
@@ -51,10 +54,10 @@ public class UserService {
         return response;
     }
 
-
+    //Login verification
     public String loginVerify(LoginDto loginDto) {
 
-        User user=userrepo.findByEmail(loginDto.getEmail());
+        User user=userRepo.findByEmail(loginDto.getEmail());
 
         if(user==null){
             return "user not found";
@@ -73,5 +76,27 @@ public class UserService {
         }
 
 
+    }
+
+
+    public List<ResponseDto> getAllUsers(){
+
+        List<User> users=userRepo.findAll();
+
+        List<ResponseDto> responseDtoList=new ArrayList<>();
+
+        for(User u:users){
+            ResponseDto res=new ResponseDto();
+            res.setId(u.getId());
+            res.setName(u.getName());
+            res.setEmail(u.getEmail());
+            res.setCreatedAt(u.getCreatedAt());
+
+
+            responseDtoList.add(res);
+
+        }
+
+        return responseDtoList;
     }
 }
