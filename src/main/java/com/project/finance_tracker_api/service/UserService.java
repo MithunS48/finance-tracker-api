@@ -8,6 +8,7 @@ import com.project.finance_tracker_api.dto.ResponseDto;
 import com.project.finance_tracker_api.entity.User;
 import com.project.finance_tracker_api.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -98,5 +99,20 @@ public class UserService {
         }
 
         return responseDtoList;
+    }
+
+    public ResponseDto getUserById(Integer id){
+        User user=userRepo.findById(id).orElse(null);
+
+        if(user==null){
+            return null;
+        }
+        ResponseDto res=new ResponseDto();
+        res.setId(user.getId());
+        res.setName(user.getName());
+        res.setEmail(user.getEmail());
+        res.setCreatedAt(user.getCreatedAt());
+
+        return res;
     }
 }

@@ -36,4 +36,9 @@ public class UserCont {
     public List<ResponseDto> getAllUser(){
         return userService.getAllUsers();
     }
+
+    @GetMapping("/{id}")
+    public ResponseDto getUserById(@PathVariable Integer id){
+        return userService.getUserById(id);
+    }
 }
