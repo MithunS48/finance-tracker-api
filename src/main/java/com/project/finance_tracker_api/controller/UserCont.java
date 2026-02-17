@@ -41,4 +41,16 @@ public class UserCont {
     public ResponseDto getUserById(@PathVariable Integer id){
         return userService.getUserById(id);
     }
+
+    @PutMapping("/{id}")
+    public ResponseDto updateUser(@PathVariable Integer id,
+                                  @RequestBody RequestDto info){
+        return userService.updateUser(id,info);
+
+    }
+
+    @DeleteMapping("/{id}")
+    public String deleteUser(@PathVariable Integer id){
+        return userService.deleteUser(id);
+    }
 }

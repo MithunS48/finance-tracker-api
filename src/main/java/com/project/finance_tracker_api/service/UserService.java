@@ -1,5 +1,6 @@
 package com.project.finance_tracker_api.service;
 
+import com.project.finance_tracker_api.exception.UserNotFoundException;
 import com.project.finance_tracker_api.security.JwtUnit;
 
 import com.project.finance_tracker_api.dto.LoginDto;
@@ -61,7 +62,7 @@ public class UserService {
         User user=userRepo.findByEmail(loginDto.getEmail());
 
         if(user==null){
-            return "user not found";
+            throw  new UserNotFoundException("user not found");
         }
 
         boolean isMatch=passwordEncoder.matches(
@@ -105,7 +106,7 @@ public class UserService {
         User user=userRepo.findById(id).orElse(null);
 
         if(user==null){
-            return null;
+            throw  new UserNotFoundException("user not found");
         }
         ResponseDto res=new ResponseDto();
         res.setId(user.getId());
@@ -114,5 +115,33 @@ public class UserService {
         res.setCreatedAt(user.getCreatedAt());
 
         return res;
+    }
+
+    public ResponseDto updateUser(Integer id, RequestDto info) {
+
+        User user=userRepo.findById(id).orElse(null);
+        if(user==null){
+            throw  new UserNotFoundException("user not found");
+        }
+
+        user.setName(info.getName());
+        user.setEmail(info.getEmail());
+        userRepo.save(user);
+
+        ResponseDto res=new ResponseDto();
+        res.setId(user.getId());
+        res.setName(user.getName());
+        res.setEmail(user.getEmail());
+        return res;
+    }
+
+    public String deleteUser(Integer id) {
+        User user=userRepo.findById(id).orElse(null);
+        if(user==null){
+            throw  new UserNotFoundException("user not found");
+        }
+        userRepo.deleteById(id);
+        return "User deleted "+id+" successfully";
+
     }
 }
