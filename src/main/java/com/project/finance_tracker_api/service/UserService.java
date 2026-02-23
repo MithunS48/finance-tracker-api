@@ -71,7 +71,11 @@ public class UserService {
         );
 
         if(isMatch) {
-            return jwtUnit.generateToken(user.getEmail());
+            ResponseDto response=new ResponseDto();
+            response.setEmail(user.getEmail());
+            response.setRole(user.getRole());
+
+            return jwtUnit.generateToken(response);
         }
         else {
             return "Invalid credentials";

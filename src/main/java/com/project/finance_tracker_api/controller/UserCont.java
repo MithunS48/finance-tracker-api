@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class UserCont {
 
     private final UserService userService;
@@ -52,5 +52,15 @@ public class UserCont {
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Integer id){
         return userService.deleteUser(id);
+    }
+
+    @GetMapping("/admin/test")
+    public String adminTest() {
+        return "Admin Access Granted";
+    }
+
+    @GetMapping("/user/test")
+    public String userTest() {
+        return "User Access Granted";
     }
 }

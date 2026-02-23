@@ -25,13 +25,12 @@ public class SecurityFilterConfig {
        http.csrf(csrf->csrf.disable())
                .formLogin(form -> form.disable())
                .httpBasic(basic -> basic.disable())
-        .authorizeHttpRequests(auth->auth.
-                requestMatchers("/api/users/login", "/api/users/create",        "/oauth2/**",
-                        "/login/**"
+               .authorizeHttpRequests(auth->auth
+                        .requestMatchers("/api/login","/api/create").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/user/**").hasAnyRole("USER","ADMIN")
                 )
-                .permitAll()
-                .anyRequest()
-                .authenticated())
+
 
                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
