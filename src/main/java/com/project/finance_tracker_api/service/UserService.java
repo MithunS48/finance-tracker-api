@@ -1,5 +1,7 @@
 package com.project.finance_tracker_api.service;
 
+import com.project.finance_tracker_api.dto.AuthResponseDto;
+import com.project.finance_tracker_api.entity.RefreshToken;
 import com.project.finance_tracker_api.exception.UserNotFoundException;
 import com.project.finance_tracker_api.security.JwtUnit;
 
@@ -8,8 +10,9 @@ import com.project.finance_tracker_api.dto.RequestDto;
 import com.project.finance_tracker_api.dto.ResponseDto;
 import com.project.finance_tracker_api.entity.User;
 import com.project.finance_tracker_api.repository.UserRepo;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,11 +22,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class UserService {
 
 
 
     private final UserRepo userRepo;
+    private final RefreshTokenService refreshTokenService;
 
     private final PasswordEncoder passwordEncoder;
     private final JwtUnit jwtUnit;
@@ -57,31 +62,36 @@ public class UserService {
     }
 
     //Login verification
-    public String loginVerify(LoginDto loginDto) {
+    public AuthResponseDto loginVerify(LoginDto loginDto) {
 
-        User user=userRepo.findByEmail(loginDto.getEmail());
 
-        if(user==null){
-            throw  new UserNotFoundException("user not found");
-        }
+        User user = userRepo.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        boolean isMatch=passwordEncoder.matches(
+        boolean isMatch = passwordEncoder.matches(
                 loginDto.getPassword(),
                 user.getPassword()
         );
 
-        if(isMatch) {
-            ResponseDto response=new ResponseDto();
-            response.setEmail(user.getEmail());
-            response.setRole(user.getRole());
-
-            return jwtUnit.generateToken(response);
-        }
-        else {
-            return "Invalid credentials";
+        if (!isMatch) {
+            throw new RuntimeException("Invalid credentials");
         }
 
+        // Generate Access Token
+        ResponseDto response = new ResponseDto();
+        response.setEmail(user.getEmail());
+        response.setRole(user.getRole());
 
+        String accessToken = jwtUnit.generateToken(response);
+
+
+        // Generate Refresh Token
+        RefreshToken refreshToken =refreshTokenService.refreshToken(user);
+
+        return new AuthResponseDto(
+                accessToken,
+                refreshToken.getToken()
+        );
     }
 
 

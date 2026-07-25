@@ -1,11 +1,13 @@
 package com.project.finance_tracker_api.controller;
 
+import com.project.finance_tracker_api.dto.AuthResponseDto;
 import com.project.finance_tracker_api.dto.LoginDto;
 import com.project.finance_tracker_api.dto.RequestDto;
 import com.project.finance_tracker_api.dto.ResponseDto;
 import com.project.finance_tracker_api.entity.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.project.finance_tracker_api.service.UserService;
 
@@ -27,11 +29,12 @@ public class UserCont {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginDto loginDto){
+    public AuthResponseDto login(@RequestBody LoginDto loginDto){
 
         return  userService.loginVerify(loginDto);
     }
 
+    @PreAuthorize("hashRole('ADMIN')")
     @GetMapping("/all")
     public List<ResponseDto> getAllUser(){
         return userService.getAllUsers();
@@ -48,7 +51,7 @@ public class UserCont {
         return userService.updateUser(id,info);
 
     }
-
+    @PreAuthorize("hashRole('ADMIN')")
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Integer id){
         return userService.deleteUser(id);
